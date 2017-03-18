@@ -1,0 +1,8 @@
+[package]
+name = "rust_ftpd"
+version = "0.2.0"
+authors = ["evandromillian <evandro.millian@yahoo.com>"]
+
+[dependencies]
+mio = "*"
+text_io = "*"
