@@ -1,3 +1,4 @@
+
 /**
 From RFC 959 (https://tools.ietf.org/html/rfc959)
 
@@ -221,3 +222,60 @@ Return codes per command (page 49):
 
 
 */
+
+// 1xx: Positive Preliminary Reply
+#[allow(dead_code)] pub const INITIATING: u32                  = 100;
+#[allow(dead_code)] pub const RESTART_MARKER: u32              = 110;
+#[allow(dead_code)] pub const READY_MINUTE: u32                = 120;
+#[allow(dead_code)] pub const ALREADY_OPEN: u32                = 125;
+#[allow(dead_code)] pub const ABOUT_TO_SEND: u32               = 150;
+
+// 2xx: Positive Completion Reply
+#[allow(dead_code)] pub const COMMAND_OK: u32                  = 200;
+#[allow(dead_code)] pub const COMMAND_NOT_IMPLEMENTED: u32     = 202;
+#[allow(dead_code)] pub const SYSTEM: u32                      = 211;
+#[allow(dead_code)] pub const DIRECTORY: u32                   = 212;
+#[allow(dead_code)] pub const FILE: u32                        = 213;
+#[allow(dead_code)] pub const HELP: u32                        = 214;
+#[allow(dead_code)] pub const NAME: u32                        = 215;
+#[allow(dead_code)] pub const READY: u32                       = 220;
+#[allow(dead_code)] pub const CLOSING: u32                     = 221;
+#[allow(dead_code)] pub const DATA_CONNECTION_OPEN: u32        = 225;
+#[allow(dead_code)] pub const CLOSING_DATA_CONNECTION: u32     = 226;
+#[allow(dead_code)] pub const PASSIVE_MODE: u32                = 227;
+#[allow(dead_code)] pub const LONG_PASSIVE_MODE: u32           = 228;
+#[allow(dead_code)] pub const EXTENDED_PASSIVE_MODE: u32       = 229;
+#[allow(dead_code)] pub const LOGGED_IN: u32                   = 230;
+#[allow(dead_code)] pub const LOGGED_OUT: u32                  = 231;
+#[allow(dead_code)] pub const LOGOUT_ACK: u32                  = 232;
+#[allow(dead_code)] pub const AUTH_OK: u32                     = 234;
+#[allow(dead_code)] pub const REQUESTED_FILE_ACTION_OK: u32    = 250;
+#[allow(dead_code)] pub const PATH_CREATED: u32                = 257;
+
+// 3xx: Positive intermediate Reply
+#[allow(dead_code)] pub const NEED_PASSWORD: u32               = 331;
+#[allow(dead_code)] pub const LOGIN_NEED_ACCOUNT: u32          = 332;
+#[allow(dead_code)] pub const REQUEST_FILE_PENDING: u32        = 350;
+
+// 4xx: Transient Negative Completion Reply
+#[allow(dead_code)] pub const NOT_AVAILABLE: u32               = 421;
+#[allow(dead_code)] pub const CANNOT_OPEN_DATA_CONNECTION: u32 = 425;
+#[allow(dead_code)] pub const TRANSER_ABORTED: u32             = 426;
+#[allow(dead_code)] pub const INVALID_CREDENTIALS: u32         = 430;
+#[allow(dead_code)] pub const HOST_UNAVAILABLE: u32            = 434;
+#[allow(dead_code)] pub const REQUEST_FILE_ACTION_IGNORED: u32 = 450;
+#[allow(dead_code)] pub const ACTION_ABORTED: u32              = 451;
+#[allow(dead_code)] pub const REQUESTED_ACTION_NOT_TAKEN: u32  = 452;
+
+// 5xx: Permanent Negative Completion Reply
+#[allow(dead_code)] pub const BAD_COMMAND: u32                 = 500;
+#[allow(dead_code)] pub const BAD_ARGUMENTS: u32               = 501;
+#[allow(dead_code)] pub const NOT_IMPLEMENTED: u32             = 502;
+#[allow(dead_code)] pub const BAD_SEQUENCE: u32                = 503;
+#[allow(dead_code)] pub const NOT_IMPLEMENTED_PARAMETER: u32   = 504;
+#[allow(dead_code)] pub const NOT_LOGGED_IN: u32               = 530;
+#[allow(dead_code)] pub const STORING_NEED_ACCOUNT: u32        = 532;
+#[allow(dead_code)] pub const FILE_UNAVAILABLE: u32            = 550;
+#[allow(dead_code)] pub const PAGE_TYPE_UNKNOWN: u32           = 551;
+#[allow(dead_code)] pub const EXCEEDED_STORAGE: u32            = 552;
+#[allow(dead_code)] pub const BAD_FILENAME: u32                = 553;

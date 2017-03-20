@@ -1,8 +1,27 @@
+extern crate regex;
+
 use std::str;
-use std::io::{Read, Write};
+use std::io::{ Write, BufRead, BufReader };
 use std::thread;
-use std::net::{TcpListener};
+use std::net::{ TcpListener, TcpStream };
 //use std::collections::HashMap;
+use regex::Regex;
+
+mod status;
+
+#[test]
+fn test_regex() {
+	let re = Regex::new(r"([A-Z]+)[\s]*([\w|.|/|\\|:]*)\r\n").unwrap();
+	/*
+	for cap in re.captures_iter("RETR /usr/file.txt\r\n") {
+		assert_eq!("RETR", &cap[1]);
+		assert_eq!("/usr/file.txt", &cap[2]);
+	}
+	*/
+	for cap in re.captures_iter("QUIT\r\n") {
+		assert_eq!("QUIT", &cap[1]);
+	}
+}
 
 fn main() {
 	let listener = TcpListener::bind("127.0.0.1:21").unwrap();
@@ -11,130 +30,27 @@ fn main() {
 		match result {
 			Ok(result_stream) => {
 				thread::spawn(|| {
-					let mut stream = result_stream;
+					//let mut stream = result_stream;
+					let mut reader: BufReader<TcpStream> = BufReader::new(result_stream);
+					let ftp_regex = Regex::new(r"([A-Z]+)[\s]*([\w|\s|.|/|\\|:]*)\r\n").unwrap();
 					
 					// Welcome
-					let _ = stream.write(b"220 Rust FTP server\r\n");
-					let _ = stream.flush();
+					let _ = reader.get_mut().write(b"220 Rust FTP server\r\n");
 					
 					loop {
-						let mut cmd_buf = [0u8; 4];
-						match stream.read_exact(&mut cmd_buf) {
-							Ok(()) => {
-								/**
-									See list of FTP commands in 
-									* https://en.wikipedia.org/wiki/List_of_FTP_commands
-									* http://br.ccm.net/contents/265-o-protocolo-file-transfer-protocol
-								*/
-								let cmd = str::from_utf8(&cmd_buf).unwrap();
-								match cmd {
-									"OPTS" => {
-										let mut arg_buf = [0u8; 64];
-										match stream.read(&mut arg_buf) {
-											Ok(_) => {
-												let args = str::from_utf8(&arg_buf).unwrap();
-												println!("Command {} args: {}", cmd, args);
-												
-												let _ = stream.write(b"200 OK\r\n");
-												let _ = stream.flush();
-											}
-											Err(e) => {
-												println!("Error answering {} command: {}", cmd, e);
-												break;
-											}
-										}
-									}
-									"USER" => {
-										let mut arg_buf = [0u8; 128];
-										match stream.read(&mut arg_buf) {
-											Ok(_) => {
-												let args = str::from_utf8(&arg_buf).unwrap();
-												println!("Command {} args: {}", cmd, args);
-												
-												/**
-													200 - OK
-													331 - User name OK, need password
-												*/
-												let _ = stream.write(b"331 User name OK, need password\r\n");
-												let _ = stream.flush();
-											}
-											Err(e) => {
-												println!("Error answering {} command: {}", cmd, e);
-												break;
-											}
-										}
-									}
-									"PASS" => {
-										let mut arg_buf = [0u8; 128];
-										match stream.read(&mut arg_buf) {
-											Ok(_) => {
-												let args = str::from_utf8(&arg_buf).unwrap();
-												println!("Command {} args: {}", cmd, args);
-												
-												/**
-													230 - Logged in
-													331 - User name OK, need password
-												*/
-												let _ = stream.write(b"230 Logged in\r\n");
-												let _ = stream.flush();
-											}
-											Err(e) => {
-												println!("Error answering {} command: {}", cmd, e);
-												break;
-											}
-										}
-									}
-									/*
-									"PORT" => {
-
-									}
-									"TYPE" => {
-
-									}
-									"MODE" => {
-
-									}
-									"STRU" => {
-
-									}
-									"RETR" => {
-
-									}
-									"STOR" => {
-
-									}
-									*/
-									"QUIT" => {
-										let mut arg_buf = [0u8; 4];
-										match stream.read(&mut arg_buf) {
-											Ok(_) => {
-												println!("Command {} ", cmd);
-												
-												/**
-													221 - OK
-												*/
-												let _ = stream.write(b"221 Bye\r\n");
-												let _ = stream.flush();
-											}
-											Err(e) => {
-												println!("Error answering {} command: {}", cmd, e);
-												break;
-											}
-										}
-									}
-									_ => { 
-										println!("Command {} unrecognized", cmd);
-										
-										let mut arg_buf = [0u8; 128];
-										let _ = stream.read(&mut arg_buf);
-										let _ = stream.write(b"500 Command unrecognized\r\n");
-										let _ = stream.flush();
-									}
-								}
+						let mut line = String::new();
+						match reader.read_line(&mut line) {
+							Ok(_) => {								
+								let caps = ftp_regex.captures(line.as_str()).unwrap();
+								let command = caps.get(1).unwrap().as_str();
+								let arguments = caps.get(2).unwrap().as_str();
+								println!("Command: {}", &command);
+								println!("Arguments: {}", &arguments);								
+								
 								
 							}
-							Err(e) => { 
-								println!("Error reading message: {}", e);
+							Err(err) => {
+								println!("Error reading: {}", err);
 								break;
 							}
 						}
